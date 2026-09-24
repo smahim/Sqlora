@@ -19,11 +19,11 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
+    - name: Make gradlew executable
+      run: chmod +x gradlew || true
 
-    - name: Build APK with Gradle
-      run: gradle assembleDebug -x validateSigningDebug -Djava.awt.headless=true --no-daemon
+    - name: Build APK with Wrapper
+      run: ./gradlew assembleDebug -x validateSigningDebug --no-daemon
 
     - name: Upload APK
       uses: actions/upload-artifact@v4

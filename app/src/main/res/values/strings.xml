@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SQLite Studio</string>
+    <string name="app_name">SQLora</string>
     <string name="nav_databases">Databases</string>
     <string name="nav_sql_console">SQL Console</string>
     <string name="nav_history">History</string>

@@ -141,7 +141,7 @@ fun DatabaseListScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             StudioTopBar(
-                title = "SQLite Studio",
+                title = "SQLora",
                 subtitle = "Native SQLite Manager • Storage Access Framework",
                 actions = {
                     IconButton(

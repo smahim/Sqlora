@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "SQLite Studio"
+rootProject.name = "SQLora"
 
 include(":app")

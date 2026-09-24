@@ -1,5 +1,5 @@
 {
-  "name": "SQLite Studio",
+  "name": "SQLora",
   "description": "Powerful, offline-first SQLite database manager for Android with schema browser, table viewer, and SQL console.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

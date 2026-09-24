@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">SQLite Studio</string>
+    <string name="nav_databases">Databases</string>
+    <string name="nav_sql_console">SQL Console</string>
+    <string name="nav_history">History</string>
+    <string name="action_new_database">New Database</string>
+    <string name="action_load_sample">Load Sample DB</string>
+    <string name="action_execute">Run</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_create">Create</string>
+    <string name="action_delete">Delete</string>
+    <string name="empty_databases_title">No SQLite Databases</string>
+    <string name="empty_databases_subtitle">Create a new local database or load starter sample databases to begin inspecting schemas and running queries.</string>
+    <string name="dialog_create_db_title">Create New Database</string>
+    <string name="db_name_label">Database Name</string>
+    <string name="db_desc_label">Description (optional)</string>
+    <string name="tables_count_label">%1$d tables</string>
+</resources>

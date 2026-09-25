@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.model.DatabaseItem
+import com.example.data.model.DatabaseMetadata
 import com.example.repository.DatabaseRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,7 +19,10 @@ data class DatabaseListUiState(
     val databases: List<DatabaseItem> = emptyList(),
     val isLoading: Boolean = false,
     val showCreateDialog: Boolean = false,
-    val userMessage: String? = null
+    val userMessage: String? = null,
+    val expandedDatabaseIds: Set<Long> = emptySet(),
+    val metadataByDatabaseId: Map<Long, DatabaseMetadata> = emptyMap(),
+    val loadingMetadataIds: Set<Long> = emptySet()
 ) {
     val totalSizeBytes: Long
         get() = databases.sumOf { it.sizeBytes }
@@ -34,24 +38,56 @@ class DatabaseListViewModel(
     private val _isLoading = MutableStateFlow(false)
     private val _showCreateDialog = MutableStateFlow(false)
     private val _userMessage = MutableStateFlow<String?>(null)
+    private val _expandedDatabaseIds = MutableStateFlow<Set<Long>>(emptySet())
+    private val _metadataByDatabaseId = MutableStateFlow<Map<Long, DatabaseMetadata>>(emptyMap())
+    private val _loadingMetadataIds = MutableStateFlow<Set<Long>>(emptySet())
 
     val uiState: StateFlow<DatabaseListUiState> = combine(
         repository.allDatabases,
         _isLoading,
         _showCreateDialog,
-        _userMessage
-    ) { databases, loading, showDialog, message ->
+        _userMessage,
+        _expandedDatabaseIds,
+        _metadataByDatabaseId,
+        _loadingMetadataIds
+    ) { databases, loading, showDialog, message, expanded, metadata, loadingMetadata ->
         DatabaseListUiState(
             databases = databases,
             isLoading = loading,
             showCreateDialog = showDialog,
-            userMessage = message
+            userMessage = message,
+            expandedDatabaseIds = expanded,
+            metadataByDatabaseId = metadata,
+            loadingMetadataIds = loadingMetadata
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = DatabaseListUiState(isLoading = true)
     )
+
+    fun toggleDatabaseExpanded(databaseId: Long) {
+        val current = _expandedDatabaseIds.value.toMutableSet()
+        if (!current.add(databaseId)) current.remove(databaseId)
+        _expandedDatabaseIds.value = current
+        if (databaseId in current && databaseId !in _metadataByDatabaseId.value && databaseId !in _loadingMetadataIds.value) {
+            loadDatabaseMetadata(databaseId)
+        }
+    }
+
+    private fun loadDatabaseMetadata(databaseId: Long) {
+        _loadingMetadataIds.value = _loadingMetadataIds.value + databaseId
+        viewModelScope.launch {
+            try {
+                val metadata = repository.getDatabaseMetadata(databaseId)
+                _metadataByDatabaseId.value = _metadataByDatabaseId.value + (databaseId to metadata)
+            } catch (_: Exception) {
+                // The explorer keeps the database node usable even when schema metadata cannot be read.
+            } finally {
+                _loadingMetadataIds.value = _loadingMetadataIds.value - databaseId
+            }
+        }
+    }
 
     fun openCreateDialog() {
         _showCreateDialog.value = true
